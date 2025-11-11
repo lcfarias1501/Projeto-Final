@@ -1,0 +1,12 @@
+
+.Header_Container div:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.Header_Container .buttons_container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}

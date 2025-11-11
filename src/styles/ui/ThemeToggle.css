@@ -1,0 +1,16 @@
+
+.ToggleTheme_button{
+    padding: .25rem .5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    cursor: pointer;
+    border-width: 2px;
+    border-color: hsl(var(--primary));
+    border-radius: .5rem;
+}
+
+.ToggleTheme_button .theme_icons {
+    color: hsl(var(--primary));
+}
