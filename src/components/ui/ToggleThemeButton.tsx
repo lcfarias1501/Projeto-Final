@@ -30,7 +30,7 @@ export default function ToggleThemeButton() {
             aria-label={isDark ? "Mudar para modo claro" : "Mudar para modo escuro"}
         >
             {isDark ?
-                <LuSun size={20} className='theme_icons' /> : // É bom definir um tamanho
+                <LuSun size={20} className='theme_icons' /> :
                 <LuMoon size={20} className='theme_icons'/>
             }
         </button>
