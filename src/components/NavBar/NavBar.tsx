@@ -2,9 +2,10 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import ToggleThemeButton from './ui/ToggleThemeButton'
+import ToggleThemeButton from '../ui/ToggleThemeButton'
 import '@/styles/NavBar/NavBar.css'
-import OpenMenuButton from './ui/OpenMenuButton'
+import OpenMenuButton from '../ui/OpenMenuButton'
+import MenuDrawerContent from './MenuDrawerContent'
 
 export default function NavBar() {
 
@@ -12,8 +13,7 @@ export default function NavBar() {
 
   return (
     <header className='Header_Container'>
-      <div className='container'>
-
+      <div className='container Header_Wrapper'>
 
         <Image src={'/images/logos/Logo.png'} alt='Logo' width={40} height={40} />
 
@@ -25,19 +25,9 @@ export default function NavBar() {
       </div>
 
       {/* MENU CONTAINER */}
-      <div className={`Menu_Container ${isMenuOpen ? 'active' : ''}`}>
-        <nav className='menu_nav'>
-          <button type='button' onClick={() => setIsMenuOpen(false)} className='close_menu_button text-black'>
-            Fechar Menu
-          </button>
-          <ul>
-            <li><a href='#'>Home</a></li>
-            <li><a href='#'>About</a></li>
-            <li><a href='#'>Services</a></li>
-            <li><a href='#'>Contact</a></li>
-          </ul>
-        </nav>
-      </div>
+      <section className={`Menu_Container ${isMenuOpen ? 'active' : ''}`}>
+          <MenuDrawerContent setIsMenuOpen={setIsMenuOpen} />
+      </section>
       {/* MENU OVERLAY */}
       <div className={`Menu_Overlay ${isMenuOpen ? 'active' : ''}`}></div>
 
