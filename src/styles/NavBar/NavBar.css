@@ -1,8 +1,15 @@
 
+.Header_Container {
+    border-bottom: .5px solid hsl(var(--border) / 0.2);
+
+}
+
 .Header_Container div:first-child {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 }
 
 .Header_Container .buttons_container {

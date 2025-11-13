@@ -14,12 +14,12 @@ export default function NavBar() {
       <div className='container'>
 
 
-        <Image src={'/images/logos/Logo.png'} alt='Logo' width={40} height={40} />
+        <Image src={'/images/logos/Logo.png'} alt='Logo' width={35} height={35} />
 
         <div className='buttons_container'>
           <ToggleThemeButton />
 
-
+          
         </div>
 
       </div>

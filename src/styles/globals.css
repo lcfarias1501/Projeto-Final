@@ -31,7 +31,7 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 89.8%;
+    --border: 0 0% 90%;
     --input: 0 0% 89.8%;
     --ring: 24.6 95% 53.1%;
     /* Cor do Laranja Primário para Foco */
@@ -64,7 +64,7 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 14.9%;
+    --border: 0 0% 100%;
     --input: 0 0% 14.9%;
     --ring: 24.6 95% 53.1%;
   }
