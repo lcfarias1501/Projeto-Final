@@ -1,0 +1,126 @@
+.Hero_Section {
+    height: 600px;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.Hero_Section_Image_Wrapper {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.Hero_Section_Image {
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.9s ease;
+}
+
+.Hero_Section:hover .Hero_Section_Image {
+    transform: scale(1.05);
+}
+
+.Hero_Section_Layer {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: linear-gradient(
+        to right, 
+        rgba(0, 0, 0, 0.3), 
+        rgba(0, 0, 0, 0.75) 60%
+    );
+    display: flex;
+    align-items: center;
+}
+
+.Hero_Section_Content {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    color: white;
+    height: auto;
+    margin-left: auto;
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.Hero_Section_Content h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.Hero_Section_Content p {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    max-width: 40ch;
+    text-align: right;
+}
+
+.Hero_CTA_Button {
+    color: white;
+    border: 2px solid hsl(var(--primary));
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px hsl(var(--secondary) / 0.3);
+}
+
+.Hero_CTA_Button:hover {
+    background-color: hsl(var(--primary));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px hsl(var(--secondary) / 0.4);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .Hero_Section {
+        height: 450px;
+    }
+
+    .Hero_Section_Content {
+        text-align: center;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+        align-items: center;
+    }
+
+    .Hero_Section_Layer {
+        background: linear-gradient(
+            to bottom, 
+            rgba(0, 0, 0, 0.4), 
+            rgba(0, 0, 0, 0.8)
+        );
+    }
+
+    .Hero_CTA_Button {
+        width: 80%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+    }
+
+    .Hero_Section_Content p {
+        text-align: center;
+    }
+}

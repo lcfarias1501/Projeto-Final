@@ -16,7 +16,9 @@ export default function NavBar() {
     <header className='Header_Container'>
       <div className='container Header_Wrapper'>
 
-        <Image src={'/images/logos/Logo_Cyan.png'} alt='Logo' width={35} height={35} />
+        <a href="/">
+          <Image src={'/images/logos/Logo_Cyan.png'} alt='Logo' width={35} height={35} />
+        </a>
 
         <SearchComponentBig />
 
