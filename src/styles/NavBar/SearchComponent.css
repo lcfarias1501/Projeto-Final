@@ -1,0 +1,25 @@
+
+/* COMPONENT CONTAINER */
+.SearchResultsContainer {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+}
+
+/* INPUT CONTAINER */
+.SearchComponentBig_Container {
+    display: flex;
+    height: 100%;
+    justify-content: space-between;
+    
+}
+
+.SearchResultsContainer input {
+    width: 100%;
+    outline: none;
+}
+
+.SearchComponentBig_Button {
+    cursor: pointer;
+    transform: rotateZ(90deg);
+}

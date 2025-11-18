@@ -5,10 +5,11 @@
     width: 100%;
     height: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
     justify-content: space-between;
 }
 
-/* close button */
+/* CLOSE BUTTON */
 .menu_drawer_content .close_menu_button {
     align-self: flex-start;
     background: transparent;
@@ -33,10 +34,20 @@
     gap: 1.5rem;
 }
 
+/* TITULO DE CADA SECTION DO MENU */
 .menu_drawer_content .content_container h3 {
     font-size: 1.25rem;
     font-weight: 600;
-    color: hsl(var(--foreground)); /* Changed from --text-primary */
+    color: hsl(var(--foreground)); 
+}
+
+/* DIVIDER */
+.menu_drawer_content .content_container .Divider {
+    height: 3px;
+    width: 60%;
+    background-color: hsl(var(--primary));
+    border-radius: .15rem;
+    margin: 2px 0;
 }
 
 /* links das páginas */

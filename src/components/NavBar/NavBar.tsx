@@ -6,6 +6,7 @@ import ToggleThemeButton from '../ui/ToggleThemeButton'
 import '@/styles/NavBar/NavBar.css'
 import OpenMenuButton from '../ui/OpenMenuButton'
 import MenuDrawerContent from './MenuDrawerContent'
+import SearchComponentBig from './SearchComponentBig'
 
 export default function NavBar() {
 
@@ -15,7 +16,9 @@ export default function NavBar() {
     <header className='Header_Container'>
       <div className='container Header_Wrapper'>
 
-        <Image src={'/images/logos/Logo.png'} alt='Logo' width={35} height={35} />
+        <Image src={'/images/logos/Logo_Cyan.png'} alt='Logo' width={35} height={35} />
+
+        <SearchComponentBig />
 
         <div className='buttons_container'>
           <ToggleThemeButton />
@@ -29,7 +32,7 @@ export default function NavBar() {
           <MenuDrawerContent setIsMenuOpen={setIsMenuOpen} />
       </section>
       {/* MENU OVERLAY */}
-      <div className={`Menu_Overlay ${isMenuOpen ? 'active' : ''}`}></div>
+      <div className={`Menu_Overlay ${isMenuOpen ? 'active' : ''}`} onClick={()=> setIsMenuOpen(false)}></div>
 
     </header>
   )

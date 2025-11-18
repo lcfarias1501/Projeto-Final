@@ -32,7 +32,7 @@ export default function MenuDrawerContent({ setIsMenuOpen }: MenuDrawerContentPr
         setIsMenuOpen(false)
       }
     }
-    
+
     window.addEventListener('keydown', handleEscape)
     return () => window.removeEventListener('keydown', handleEscape)
   }, [setIsMenuOpen])
@@ -42,17 +42,21 @@ export default function MenuDrawerContent({ setIsMenuOpen }: MenuDrawerContentPr
 
       <div className='content_container w-full'>
         {/* CLOSE BUTTON */}
-        <button 
+        <button
           ref={closeButtonRef}
-          type='button' 
-          onClick={() => setIsMenuOpen(false)} 
+          type='button'
+          onClick={() => setIsMenuOpen(false)}
           className='close_menu_button'
           aria-label="Fechar menu"
         >
           <LuPanelRightClose size={24} className='theme_icons' />
         </button>
 
-        <h3 className='SectionTitle'>Páginas</h3>
+        {/* LINKS DAS PÁGINAS */}
+        <div>
+          <h3 className='SectionTitle'>Páginas</h3>
+          <div className='Divider'></div>
+        </div>
 
         <nav>
           <ul className='w-full' role="list">
@@ -72,7 +76,19 @@ export default function MenuDrawerContent({ setIsMenuOpen }: MenuDrawerContentPr
             })}
           </ul>
         </nav>
+
+        {/* ÁREA DO USER */}
+        {false &&
+          <div>
+            <h3 className='SectionTitle'>Perfil</h3>
+            <div className='Divider'></div>
+          </div>
+        }
+
+
       </div>
+
+
 
       <div className='w-full'>
         <button className='Login_Button' onClick={() => setIsMenuOpen(false)}>
