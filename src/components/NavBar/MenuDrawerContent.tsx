@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef } from 'react'
-import { LuPanelRightClose } from 'react-icons/lu'
+import { LuChevronLast } from 'react-icons/lu'
 import { usePathname } from 'next/navigation'
 import '@/styles/NavBar/MenuContent.css'
 import menuItems from '@/constants/menuItems'
@@ -49,7 +49,7 @@ export default function MenuDrawerContent({ setIsMenuOpen }: MenuDrawerContentPr
           className='close_menu_button'
           aria-label="Fechar menu"
         >
-          <LuPanelRightClose size={24} className='theme_icons' />
+          <LuChevronLast size={24} className='theme_icons' />
         </button>
 
         {/* LINKS DAS PÁGINAS */}

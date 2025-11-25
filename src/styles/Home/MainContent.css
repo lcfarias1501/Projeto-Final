@@ -1,0 +1,19 @@
+
+.HomeContent {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.HomeContent section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.HomeContent .Section_Title {
+    font-size: 2rem;
+    font-weight: bold;
+}

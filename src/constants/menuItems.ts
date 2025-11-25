@@ -17,8 +17,8 @@ const menuItems: items[] = [
         path: '/Maps'
     },
     {
-        name: 'Carrinho',
-        path: 'Checkout'
+        name: 'Contactos',
+        path: 'Contacts'
     },
 ]
 

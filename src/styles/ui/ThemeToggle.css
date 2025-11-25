@@ -6,8 +6,8 @@
     justify-content: center;
     background-color: transparent;
     cursor: pointer;
-    border-width: 2px;
-    border-color: hsl(var(--primary));
+    /* border-width: 2px; */
+    /* border-color: hsl(var(--primary)); */
     border-radius: .5rem;
 }
 

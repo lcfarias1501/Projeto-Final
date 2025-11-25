@@ -28,10 +28,10 @@ export default function HeroSection() {
 
             <div className="Hero_Section_Layer">
                 <div className='Hero_Section_Content container'>
-                    <h1>Find Restaurants Near You</h1>
-                    <p>Search places by cuisine, price, and distance. Check real reviews, hours, and photos. Pick where you want to eat without confusion.</p>
+                    <h1>Encontre Restaurantes Perto de Si</h1>
+                    <p>Procure lugares por culinária, preço e distância. Confira avaliações reais, horários e fotos. Escolha onde quer comer sem confusão.</p>
                     <button className='Hero_CTA_Button' onClick={handleExploreClick}>
-                        Explore Restaurants
+                        Explorar Restaurantes
                     </button>
                 </div>
             </div>
