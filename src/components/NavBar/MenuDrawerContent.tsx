@@ -1,75 +1,128 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
-import { LuChevronLast } from 'react-icons/lu'
+import React, { useEffect, useRef, useState } from 'react'
+import { LuChevronLast, LuSearch, LuUser, LuMail, LuX } from 'react-icons/lu'
 import { usePathname } from 'next/navigation'
 import '@/styles/NavBar/MenuContent.css'
 import menuItems from '@/constants/menuItems'
 import Link from 'next/link'
 
 interface MenuDrawerContentProps {
-  setIsMenuOpen: (isOpen: boolean) => void
+  isMenuOpen: boolean
+  onCloseMenu: () => void
 }
 
-export default function MenuDrawerContent({ setIsMenuOpen }: MenuDrawerContentProps) {
+export default function MenuDrawerContent({ isMenuOpen, onCloseMenu }: MenuDrawerContentProps) {
   const pathname = usePathname()
   const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [isVisible, setIsVisible] = useState(isMenuOpen)
+
+  // Sync visibility with prop (trigger animation on open/close)
+  useEffect(() => {
+    setIsVisible(isMenuOpen)
+  }, [isMenuOpen])
 
   // Auto-focus close button when drawer opens (accessibility)
   useEffect(() => {
-    closeButtonRef.current?.focus()
-  }, [])
+    if (isMenuOpen) closeButtonRef.current?.focus()
+  }, [isMenuOpen])
 
   // Close drawer when user clicks a link
   const handleLinkClick = () => {
-    setIsMenuOpen(false)
+    setIsVisible(false)
+    setTimeout(() => onCloseMenu(), 200)
   }
 
   // Close drawer on Escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setIsMenuOpen(false)
+        setIsVisible(false)
+        setTimeout(() => onCloseMenu(), 200)
       }
     }
 
     window.addEventListener('keydown', handleEscape)
     return () => window.removeEventListener('keydown', handleEscape)
-  }, [setIsMenuOpen])
+  }, [onCloseMenu])
+
+  // Filter menu items based on search
+  const filteredItems = menuItems.filter(item =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   return (
-    <div className='menu_drawer_content' role="navigation" aria-label="Menu principal">
+    <div className={`menu_drawer_content ${isVisible ? 'visible' : ''}`} role="navigation" aria-label="Menu principal">
 
       <div className='content_container w-full'>
         {/* CLOSE BUTTON */}
         <button
           ref={closeButtonRef}
           type='button'
-          onClick={() => setIsMenuOpen(false)}
+          onClick={() => {
+            setIsVisible(false)
+            setTimeout(() => onCloseMenu(), 200)
+          }}
           className='close_menu_button'
           aria-label="Fechar menu"
         >
-          <LuChevronLast size={24} className='theme_icons' />
-        </button>
+          <LuX size={20} className='theme_icons' />
+        </button> 
+
+        {/* GRADIENT HEADER WITH PROFILE PREVIEW */}
+        {/* <div className='menu_header_gradient'>
+          <div className='profile_preview'>
+            <div className='avatar_placeholder'>
+              <LuUser size={28} />
+            </div>
+            <div className='profile_info'>
+              <p className='profile_greeting'>Bem-vindo!</p>
+              <p className='profile_subtitle'>Visitante</p>
+            </div>
+          </div>
+        </div> */}
+
+        {/* MINI SEARCH BAR */}
+        <div className='menu_search_container'>
+          <LuSearch size={18} className='search_icon' />
+          <input
+            type='text'
+            placeholder='Buscar páginas...'
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className='menu_search_input'
+          />
+        </div>
 
         {/* LINKS DAS PÁGINAS */}
         <div>
-          <h3 className='SectionTitle'>Páginas</h3>
+          <h3 className='SectionTitle'>
+            <span className='section_title_text pb-1'>Navegação</span>
+          </h3>
           <div className='Divider'></div>
         </div>
 
         <nav>
-          <ul className='w-full' role="list">
-            {menuItems.map((item) => {
+          <ul className='w-full menu_list' role="list">
+            {filteredItems.map((item, index) => {
               const isCurrentPage = pathname === item.path
               return (
-                <li key={item.name} className={isCurrentPage ? 'active' : ''}>
+                <li 
+                  key={item.name} 
+                  className={`menu_item ${isCurrentPage ? 'active' : ''}`}
+                  style={{ '--item-index': index } as React.CSSProperties}
+                >
                   <Link
                     href={item.path}
                     onClick={handleLinkClick}
                     aria-current={isCurrentPage ? 'page' : undefined}
+                    className='menu_link'
                   >
-                    {item.name}
+                    <span className='link_content'>
+                      {item.name}
+                    </span>
+                    {isCurrentPage && <span className='active_indicator'></span>}
                   </Link>
                 </li>
               )
@@ -77,23 +130,20 @@ export default function MenuDrawerContent({ setIsMenuOpen }: MenuDrawerContentPr
           </ul>
         </nav>
 
-        {/* ÁREA DO USER */}
-        {false &&
-          <div>
-            <h3 className='SectionTitle'>Perfil</h3>
-            <div className='Divider'></div>
-          </div>
-        }
-
+        {/* No results message */}
+        {filteredItems.length === 0 && (
+          <p className='no_results_message'>Nenhuma página encontrada</p>
+        )}
 
       </div>
 
-
-
-      <div className='w-full'>
-        <button className='Login_Button' onClick={() => setIsMenuOpen(false)}>
-          Entre com sua conta
-        </button>
+      {/* BOTTOM SECTION */}
+      <div className='w-full menu_footer'>
+        {/* <button className='Login_Button' onClick={handleLinkClick}>
+          <LuMail size={18} />
+          <span>Entre com sua conta</span>
+        </button> */}
+        <p className='footer_text'>Versão 1.0.0</p>
       </div>
 
     </div>

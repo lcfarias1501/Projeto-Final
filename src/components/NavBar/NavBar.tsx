@@ -31,7 +31,7 @@ export default function NavBar() {
 
       {/* MENU CONTAINER */}
       <section className={`Menu_Container ${isMenuOpen ? 'active' : ''}`}>
-          <MenuDrawerContent setIsMenuOpen={setIsMenuOpen} />
+          <MenuDrawerContent isMenuOpen={isMenuOpen} onCloseMenu={()=> setIsMenuOpen(false)} />
       </section>
       {/* MENU OVERLAY */}
       <div className={`Menu_Overlay ${isMenuOpen ? 'active' : ''}`} onClick={()=> setIsMenuOpen(false)}></div>

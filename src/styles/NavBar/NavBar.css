@@ -19,38 +19,3 @@
 }
 
 
-/* MENU CONTAINER */
-.Menu_Container {
-    position: fixed;
-    top: 0;
-    right: -100%;
-    width: 20rem;
-    height: 100%;
-    background-color: hsl(var(--background));
-    z-index: 3;
-    transition: all .3s ease-in-out;
-    padding: 1rem;
-    border-left: 4px solid hsl(var(--primary));
-    box-shadow: 0 0 16px hsl(var(--primary));
-}
-.Menu_Container.active {
-    right: 0;
-}
-
-
-/* MENU OVERLAY */
-.Menu_Overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.8);
-    transition: all .3s ease-in-out;
-    z-index: 2;
-    backdrop-filter: blur(2px);
-}
-.Menu_Overlay.active {
-    display: block;
-}
