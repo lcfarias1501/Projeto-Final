@@ -73,3 +73,5 @@ export const trendingRestaurants: TR[] = [
     location: "Leiria"
   }
 ]
+
+export const allRestaurants: TR[] = [...trendingRestaurants, ...trendingRestaurants, ...trendingRestaurants]

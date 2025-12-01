@@ -3,6 +3,7 @@ import { Roboto } from "next/font/google"
 import '../styles/globals.css'
 import NavBar from "@/components/NavBar/NavBar"
 import { ThemeProvider } from "@/providers/theme-provider"
+import Footer from "@/components/Footer/Footer"
 
 
 const robotoSans = Roboto({
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         >
           <NavBar />
           {children}
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
