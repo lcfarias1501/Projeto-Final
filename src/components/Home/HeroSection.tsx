@@ -3,7 +3,7 @@ import Image from 'next/image'
 import '@/styles/Home/HeroSection.css'
 import { redirect } from 'next/navigation';
 
-
+""
 
 export default function HeroSection() {
 

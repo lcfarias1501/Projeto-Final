@@ -13,8 +13,8 @@ const menuItems: items[] = [
         path: '/About'
     },
     {
-        name: 'Mapa',
-        path: '/Maps'
+        name: 'Pesquisa',
+        path: '/Search'
     },
     {
         name: 'Contactos',
