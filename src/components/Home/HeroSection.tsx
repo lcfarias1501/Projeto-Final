@@ -4,7 +4,6 @@ import '@/styles/Home/HeroSection.css'
 import { redirect } from 'next/navigation';
 
 
-const imageURL = 'https://images.pexels.com/photos/3184195/pexels-photo-3184195.jpeg'
 
 export default function HeroSection() {
 
@@ -16,7 +15,7 @@ export default function HeroSection() {
         <section className='Hero_Section'>
             <div className='Hero_Section_Image_Wrapper'>
                 <Image
-                    src={imageURL}
+                    src={'/images/others/hero-section.jpeg'}
                     alt="Restaurant ambiance with delicious food"
                     fill
                     priority
