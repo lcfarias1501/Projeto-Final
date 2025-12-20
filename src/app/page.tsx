@@ -6,7 +6,6 @@ import '@/styles/Home/MainContent.css'
 import '@/styles/ui/TrendingCards.css'
 import { trendingRestaurants as TR, allRestaurants } from '@/constants/mockRestaurants'
 import TrendingRestaurantsCard from '@/components/Home/TrendingRestaurantsCard'
-import AppDownloadSection from '@/components/Home/AppDownloadSection'
 import CategoriesSection from '@/components/Home/CategoriesSection'
 import FeaturedDealsSection from '@/components/Home/FeaturedDealsSection'
 import LocationsSection from '@/components/Home/LocationsSection'
@@ -60,9 +59,6 @@ export default function Home() {
 
         {/* EXPLORE BY LOCATION */}
         <LocationsSection />
-
-        {/* APP DOWNLOAD CTA */}
-        <AppDownloadSection />
 
       </div>
 

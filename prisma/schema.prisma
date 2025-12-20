@@ -1,0 +1,72 @@
+
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+
+model Restaurant {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  address     String
+  rating      Float    @default(0.0)
+  city        String
+  phoneNumber String
+  cuisineType CuisineType
+  imageUrl    String
+
+  // hours
+  openHour    String
+  closeHour   String
+  openDays    String
+  
+  // relations
+  menuItems  MenuItem[]
+  images     RestaurantImages[]
+
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([city])
+}
+
+model MenuItem {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  price       Float
+  category    String
+  restaurantId Int
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model RestaurantImages {
+  id           Int      @id @default(autoincrement())
+  imageUrl     String
+  restaurantId Int
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+enum CuisineType {
+  ITALIAN
+  BRAZILIAN
+  PORTUGUESE
+  CHINESE
+  INDIAN
+  MEXICAN
+  AMERICAN
+  JAPANESE
+  FRENCH
+  THAI
+  MEDITERRANEAN
+  OTHER
+}
