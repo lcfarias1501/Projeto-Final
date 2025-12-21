@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
-import { LuChevronLast, LuSearch, LuUser, LuMail, LuX } from 'react-icons/lu'
+import { LuChevronLast, LuSearch, LuUser, LuMail, LuX, LuChevronDown } from 'react-icons/lu'
 import { usePathname } from 'next/navigation'
 import '@/styles/NavBar/MenuContent.css'
 import menuItems from '@/constants/menuItems'
@@ -17,6 +17,7 @@ export default function MenuDrawerContent({ isMenuOpen, onCloseMenu }: MenuDrawe
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [isVisible, setIsVisible] = useState(isMenuOpen)
+  const [expandedMenus, setExpandedMenus] = useState<string[]>([])
 
   // Sync visibility with prop (trigger animation on open/close)
   useEffect(() => {
@@ -47,6 +48,15 @@ export default function MenuDrawerContent({ isMenuOpen, onCloseMenu }: MenuDrawe
     return () => window.removeEventListener('keydown', handleEscape)
   }, [onCloseMenu])
 
+  // Toggle submenu expansion
+  const toggleSubmenu = (itemName: string) => {
+    setExpandedMenus(prev =>
+      prev.includes(itemName)
+        ? prev.filter(name => name !== itemName)
+        : [...prev, itemName]
+    )
+  }
+
   // Filter menu items based on search
   const filteredItems = menuItems.filter(item =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -68,20 +78,7 @@ export default function MenuDrawerContent({ isMenuOpen, onCloseMenu }: MenuDrawe
           aria-label="Fechar menu"
         >
           <LuX size={20} className='theme_icons' />
-        </button> 
-
-        {/* GRADIENT HEADER WITH PROFILE PREVIEW */}
-        {/* <div className='menu_header_gradient'>
-          <div className='profile_preview'>
-            <div className='avatar_placeholder'>
-              <LuUser size={28} />
-            </div>
-            <div className='profile_info'>
-              <p className='profile_greeting'>Bem-vindo!</p>
-              <p className='profile_subtitle'>Visitante</p>
-            </div>
-          </div>
-        </div> */}
+        </button>
 
         {/* MINI SEARCH BAR */}
         <div className='menu_search_container'>
@@ -107,23 +104,66 @@ export default function MenuDrawerContent({ isMenuOpen, onCloseMenu }: MenuDrawe
           <ul className='w-full menu_list' role="list">
             {filteredItems.map((item, index) => {
               const isCurrentPage = pathname === item.path
+              const isSubmenuExpanded = expandedMenus.includes(item.name)
+              const hasSubmenu = Array.isArray(item.path)
+
               return (
-                <li 
-                  key={item.name} 
+                <li
+                  key={item.name}
                   className={`menu_item ${isCurrentPage ? 'active' : ''}`}
                   style={{ '--item-index': index } as React.CSSProperties}
                 >
-                  <Link
-                    href={item.path}
-                    onClick={handleLinkClick}
-                    aria-current={isCurrentPage ? 'page' : undefined}
-                    className='menu_link'
-                  >
-                    <span className='link_content'>
-                      {item.name}
-                    </span>
-                    {isCurrentPage && <span className='active_indicator'></span>}
-                  </Link>
+                  {hasSubmenu ? (
+                    <>
+                      {/* MENU PRINCIPAL COM SUBMENU */}
+                      <button
+                        className='menu_link submenu_button'
+                        type='button'
+                        onClick={() => toggleSubmenu(item.name)}
+                        aria-expanded={isSubmenuExpanded}
+                      >
+                        <span className='link_content'>{item.name}</span>
+                        <LuChevronDown
+                          size={18}
+                          className={`submenu_icon ${isSubmenuExpanded ? 'expanded' : ''}`}
+                        />
+                      </button>
+
+                      {/* SUBMENU */}
+                      <ul className={`submenu_list ${isSubmenuExpanded ? 'expanded' : ''}`}>
+                        {Array.isArray(item.path) && item.path.map((subItem) => {
+                          const isSubItemActive = pathname === subItem.path
+                          return (
+                            <li key={subItem.name} className='submenu_item'>
+                              <Link
+                                href={subItem.path as string}
+                                onClick={handleLinkClick}
+                                aria-current={isSubItemActive ? 'page' : undefined}
+                                className={`submenu_link ${isSubItemActive ? 'active' : ''}`}
+                              >
+                                <span className='link_content'>{subItem.name}</span>
+                                <span className='submenu_dot'></span>
+                                {isSubItemActive && <span className='active_indicator'></span>}
+                              </Link>
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    </>
+                  ) : (
+                    /* MENU NORMAL SEM SUBMENU */
+                    <Link
+                      href={item.path as string}
+                      onClick={handleLinkClick}
+                      aria-current={isCurrentPage ? 'page' : undefined}
+                      className='menu_link'
+                    >
+                      <span className='link_content'>
+                        {item.name}
+                      </span>
+                      {isCurrentPage && <span className='active_indicator'></span>}
+                    </Link>
+                  )}
                 </li>
               )
             })}
@@ -139,10 +179,6 @@ export default function MenuDrawerContent({ isMenuOpen, onCloseMenu }: MenuDrawe
 
       {/* BOTTOM SECTION */}
       <div className='w-full menu_footer'>
-        {/* <button className='Login_Button' onClick={handleLinkClick}>
-          <LuMail size={18} />
-          <span>Entre com sua conta</span>
-        </button> */}
         <p className='footer_text'>Versão 1.0.0</p>
       </div>
 

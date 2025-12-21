@@ -335,10 +335,6 @@
     box-shadow: 0 4px 12px hsl(var(--primary) / 0.1);
 }
 
-.link_content {
-    flex: 1;
-}
-
 /* ================================
    ACTIVE STATE - Glowing Effect
    ================================ */
@@ -434,6 +430,126 @@
     font-size: 0.75rem;
     color: hsl(var(--muted-foreground));
     margin: 0;
+}
+
+/* 
+================================
+        SUBMENU STYLES
+================================ 
+*/
+
+/* Botão do menu principal quando tem submenu */
+.submenu_button {
+    width: 100%;
+}
+
+.submenu_icon {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: hsl(var(--muted-foreground));
+}
+
+.submenu_icon.expanded {
+    transform: rotate(180deg);
+}
+
+/* Lista de submenus */
+.submenu_list {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding-left: 1rem;
+    margin-top: 0;
+}
+
+.submenu_list.expanded {
+    max-height: 500px;
+    margin-top: 0.5rem;
+}
+
+/* Itens do submenu */
+.submenu_item {
+    list-style: none;
+    margin-bottom: 0.25rem;
+}
+
+.submenu_link {
+    width: 100%;
+    padding: 0.625rem 1rem;
+    background: hsl(var(--muted) / 0.2);
+    color: hsl(var(--muted-foreground));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 0.5rem;
+    border: 1px solid transparent;
+    position: relative;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.submenu_link:hover {
+    background: hsl(var(--accent) / 0.8);
+    color: hsl(var(--foreground));
+    transform: translateX(4px);
+    border-color: hsl(var(--primary) / 0.15);
+}
+
+/* Dot indicator para submenu */
+.submenu_dot {
+    width: 6px;
+    height: 6px;
+    background: hsl(var(--primary) / 0.4);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* Estado ativo do submenu */
+.submenu_link.active {
+    background: linear-gradient(
+        135deg,
+        hsl(var(--primary) / 0.12),
+        hsl(var(--secondary) / 0.08)
+    );
+    color: hsl(var(--primary));
+    font-weight: 600;
+    border-color: hsl(var(--primary) / 0.3);
+}
+
+.submenu_link.active .submenu_dot {
+    background: hsl(var(--primary));
+    box-shadow: 0 0 8px hsl(var(--primary) / 0.5);
+}
+
+/* Animação de entrada dos itens do submenu */
+.submenu_list.expanded .submenu_item {
+    animation: slideInSubmenu 0.3s ease-out forwards;
+    opacity: 0;
+}
+
+.submenu_list.expanded .submenu_item:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.submenu_list.expanded .submenu_item:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.submenu_list.expanded .submenu_item:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+@keyframes slideInSubmenu {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 /* ================================

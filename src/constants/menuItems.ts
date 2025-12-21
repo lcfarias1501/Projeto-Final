@@ -1,12 +1,19 @@
-interface items {
+interface MenuItem {
     name: string
-    path: string
+    path: string | MenuItem[]
 }
 
-const menuItems: items[] = [
+const menuItems: MenuItem[] = [
     {
         name: 'Home',
         path: '/'
+    },
+    {
+        name: 'Dashboard',
+        path: [
+            { name: 'Criar Restaurante', path: '/dashboard/create-restaurant' },
+            { name: 'Apagar Restaurantes', path: '/dashboard/delete-restaurant' }
+        ]
     },
     {
         name: 'Sobre',
@@ -18,7 +25,7 @@ const menuItems: items[] = [
     },
     {
         name: 'Contactos',
-        path: 'Contacts'
+        path: '/Contacts' // Corrigi aqui - estava faltando a barra
     },
 ]
 
