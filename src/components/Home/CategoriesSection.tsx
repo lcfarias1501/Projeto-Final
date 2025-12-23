@@ -1,15 +1,6 @@
 import React from 'react'
-
-const categories = [
-  { id: 1, name: 'Pizza', icon: '🍕', count: 245 },
-  { id: 2, name: 'Sushi', icon: '🍣', count: 128 },
-  { id: 3, name: 'Burger', icon: '🍔', count: 312 },
-  { id: 4, name: 'Italiana', icon: '🍝', count: 189 },
-  { id: 5, name: 'Chinesa', icon: '🥡', count: 156 },
-  { id: 6, name: 'Mexicana', icon: '🌮', count: 98 },
-  { id: 7, name: 'Sobremesas', icon: '🍰', count: 267 },
-  { id: 8, name: 'Vegetariana', icon: '🥗', count: 142 },
-]
+import Link from "next/link"
+import { RestaurantCategories } from '@/constants/RestaurantCategories'
 
 export default function CategoriesSection() {
   return (
@@ -22,12 +13,11 @@ export default function CategoriesSection() {
       </div>
 
       <div className="categories_grid">
-        {categories.map((category) => (
-          <div key={category.id} className="category_card">
+        {RestaurantCategories.map((category) => (
+          <Link key={category.label} className="category_card" href={`/category/${category.slug}`}>
             <div className="category_icon">{category.icon}</div>
-            <h3 className="category_name">{category.name}</h3>
-            <p className="category_count">{category.count} locais</p>
-          </div>
+            <h3 className="category_name">{category.label}</h3>
+          </Link>
         ))}
       </div>
     </section>

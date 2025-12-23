@@ -21,7 +21,6 @@ export default function HeroSection() {
                     priority
                     className='Hero_Section_Image'
                     sizes="100vw"
-                    quality={90}
                 />
             </div>
 
