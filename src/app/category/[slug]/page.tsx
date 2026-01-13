@@ -7,6 +7,7 @@ import { RestaurantCategories } from "@/constants/RestaurantCategories"
 import '@/styles/SearchByCategoryPage/SearchByCategoryPage.css'
 import { Restaurant } from "@/types/Restaurant"
 import Image from "next/image"
+import Link from "next/link"
 
 export default function CategoryPage() {
 
@@ -121,8 +122,9 @@ export default function CategoryPage() {
             ) : (
                 <div className={`Restaurant_List ${listType}`}>
                     {restaurants.map((restaurant) => (
-                        <div 
+                        <Link
                             key={restaurant.id} 
+                            href={`/restaurants/${restaurant.id}`}
                             className="Restaurant_Card"
                             onClick={() => handleRestaurantClick(restaurant.id)}
                             role="button"
@@ -157,7 +159,7 @@ export default function CategoryPage() {
                                     </span>
                                 </div>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             )}
