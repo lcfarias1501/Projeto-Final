@@ -41,7 +41,6 @@ export default function TrendingRestaurants() {
                 : restaurants.length === 0 ?
                 (
                     <p className="no_content_message">Nenhum restaurante em alta disponível no momento...</p>
-
                 ) 
                 :
                 (

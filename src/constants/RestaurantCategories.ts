@@ -31,4 +31,5 @@ export const RestaurantCategories: RestaurantCategory[] = [
   { label: "Tailandesa", value: CuisineType.THAI, icon: "🍛", slug: "thai" },
   { label: "Brasileira", value: CuisineType.BRAZILIAN, icon: "🥩", slug: "brazilian" },
   { label: "Mediterrânea", value: CuisineType.MEDITERRANEAN, icon: "🐟", slug: "mediterranean" },
+  { label: "Portuguesa", value: CuisineType.PORTUGUESE, icon: "🦞", slug: "portuguese" },
 ]
