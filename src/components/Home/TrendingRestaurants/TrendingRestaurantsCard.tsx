@@ -6,7 +6,7 @@ export default function TrendingRestaurantsCard(props: any) {
   const { theme } = useTheme()
 
   return (
-    <div className="TrendingCard">
+    <a href={`/restaurants/${props.id}`} className="TrendingCard">
       <img
         src={props.imageUrl ? props.imageUrl : theme === "dark" ? "/images/others/Default_Restaurant_White.png" : "/images/others/Default_Restaurant_Black.png"}
         alt={props.name}
@@ -31,6 +31,6 @@ export default function TrendingRestaurantsCard(props: any) {
           </p>
         </div>
       </div>
-    </div>
+    </a>
   )
 }
