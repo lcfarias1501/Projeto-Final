@@ -1,0 +1,73 @@
+
+
+.SearchPage {
+    display: flex;
+    flex-direction: column;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.SearchPage_Header {
+    display: flex;
+    border: 2px solid hsl(var(--input));
+    border-radius: 10px;
+    padding: .5rem 2rem;
+}
+
+.SearchPage_Header .header_section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.SearchPage_Header input {
+    width: 100%;
+    border: none;
+}
+
+.SearchPage_Header input,
+.SearchPage_Header select
+{
+    height: 80%;
+    width: 80%;
+    padding-left: 1rem;
+    border-left: 2px solid hsl(var(--input))
+}
+
+.SearchPage_Header input:focus,
+.SearchPage_Header select:focus
+{
+    outline: none;
+}
+
+.SearchPage_Header .search_button {
+    background-color: hsl(var(--primary) / 0.5);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    outline: 2px solid hsl(var(--primary) / 0.5);
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-right: 1rem;
+}
+
+.SearchPage_Header .clear_filters_button {
+    color: hsl(var(--foreground));
+    padding: 0.5rem 1.5rem;
+    outline: 2px solid hsl(var(--input) / 0.5);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.SearchPage_Header .clear_filters_button:hover {
+    background-color: hsl(var(--card) / 0.5);
+}
+
+.SearchPage_Results {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}

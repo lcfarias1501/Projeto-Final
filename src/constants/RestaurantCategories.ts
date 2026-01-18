@@ -13,6 +13,21 @@ enum CuisineType {
     OTHER = "OTHER",
 }
 
+enum EnglishCuisineType {
+    ITALIAN = "Italian",
+    BRAZILIAN = "Brazilian",
+    PORTUGUESE = "Portuguese",
+    CHINESE = "Chinese",
+    INDIAN = "Indian",
+    MEXICAN = "Mexican",
+    AMERICAN = "American",
+    JAPANESE = "Japanese",
+    FRENCH = "French",
+    THAI = "Thai",
+    MEDITERRANEAN = "Mediterranean",
+    OTHER = "OTHER",
+}
+
 interface RestaurantCategory {
   label: string
   value: CuisineType

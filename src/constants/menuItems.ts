@@ -17,15 +17,15 @@ const menuItems: MenuItem[] = [
     },
     {
         name: 'Sobre',
-        path: '/About'
+        path: '/about'
     },
     {
         name: 'Pesquisa',
-        path: '/Search'
+        path: '/search'
     },
     {
         name: 'Contactos',
-        path: '/Contacts' // Corrigi aqui - estava faltando a barra
+        path: '/contacts' // Corrigi aqui - estava faltando a barra
     },
 ]
 

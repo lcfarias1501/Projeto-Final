@@ -1,0 +1,174 @@
+/* SearchResultsCard.css */
+
+.SearchResultsCard {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.SearchResultsCard_Container {
+  background-color: hsl(var(--card));
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid hsl(var(--border));
+  transition: all 0.3s ease;
+}
+
+.SearchResultsCard_Container:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Image Section */
+.SearchResultsCard_Image {
+  position: relative;
+  height: 12rem;
+  overflow: hidden;
+  background-color: hsl(var(--muted));
+}
+
+.SearchResultsCard_Image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.SearchResultsCard:hover .SearchResultsCard_Image img {
+  transform: scale(1.05);
+}
+
+.SearchResultsCard_ImagePlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+}
+
+/* Cuisine Badge */
+.SearchResultsCard_Badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Content Section */
+.SearchResultsCard_Content {
+  padding: 1rem;
+}
+
+/* Restaurant Name */
+.SearchResultsCard_Name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.SearchResultsCard:hover .SearchResultsCard_Name {
+  color: hsl(var(--primary));
+}
+
+/* Rating */
+.SearchResultsCard_Rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.SearchResultsCard_Star {
+  color: #f59e0b;
+}
+
+.SearchResultsCard_Star--empty {
+  color: #d1d5db;
+}
+
+.SearchResultsCard_RatingNumber {
+  margin-left: 0.25rem;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Description */
+.SearchResultsCard_Description {
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+  margin-bottom: 0.75rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.5;
+}
+
+/* Info Section */
+.SearchResultsCard_InfoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.SearchResultsCard_InfoItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.SearchResultsCard_InfoItem span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Hours Section */
+.SearchResultsCard_Hours {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid hsl(var(--border));
+}
+
+.SearchResultsCard_HoursContent {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.SearchResultsCard_HoursTime {
+  color: hsl(var(--muted-foreground));
+}
+
+.SearchResultsCard_HoursDays {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  margin-left: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .SearchResultsCard_Image {
+    height: 10rem;
+  }
+
+  .SearchResultsCard_Name {
+    font-size: 1.125rem;
+  }
+}
