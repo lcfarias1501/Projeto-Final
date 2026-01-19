@@ -29,7 +29,7 @@ export default function Home() {
         <CategoriesSection />
 
         {/* FEATURED DEALS */}
-        <FeaturedDealsSection />
+        {/* <FeaturedDealsSection /> */}
 
         {/* POPULAR DISHES */}
         <PopularDishesSection />
