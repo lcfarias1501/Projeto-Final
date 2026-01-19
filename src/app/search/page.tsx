@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { CuisineType, Restaurant } from "@/types/Restaurant"
 import { RestaurantCategories } from "@/constants/RestaurantCategories"
@@ -69,83 +69,80 @@ export default function SearchPage() {
   }
 
   return (
-    <section className="container SearchPage">
-
-      {/* BARRA DE PESQUISA / FILTROS */}
-      <div className="SearchPage_Header">
-        
-        {/* Input Nome */}
-        <div className="InputContainer header_section">
-          <input 
-            type="text" 
-            value={filters.restaurantName}
-            onChange={(e) => setFilters({...filters, restaurantName: e.target.value})}
-            style={{ border: 0, paddingLeft: 0 }}
-            placeholder="Nome do restaurante..."
-          />
-        </div>
-        
-        {/* Select Localidade */}
-        <div className="InputContainer header_section">
-          <input 
-            type="text" 
-            value={filters.city}
-            onChange={(e) => setFilters({...filters, city: e.target.value})}
-            className=""
-            placeholder="Localidade..."
-          />
-        </div>
-
-        {/* Select Cozinha */}
-        <div className="InputContainer header_section">
-          <select 
-            value={filters.cuisineType}
-            onChange={(e) => setFilters({...filters, cuisineType: e.target.value})}
-            className=""
-          >
-            <option value="">Todas as cozinhas</option>
-            {RestaurantCategories.map((category) => (
-              <option key={category.value} value={category.slug}>
-                {category.icon} {category.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* BOTÃO PESQUISAR */}
-        <button 
-          onClick={handleSearch}
-          className="search_button"
-        >
-          Pesquisar
-        </button>
-
-        {/* Limpar Filtros */}
-        <button 
-          onClick={clearFilters}
-          className="clear_filters_button" 
-        >
-          Limpar
-        </button>
-      </div>
-
-      {/* RESULTADOS */}
-      <div>
-        {isLoading ? (
-          <p>Carregando resultados...</p>
-        ) : restaurants.length > 0 ? (
-          <div className="SearchPage_Results">
-            {restaurants.map((restaurant) => (
-              <SearchResultsCard key={restaurant.id} {...restaurant} />
-            ))}
-          </div>
-        ) : (
-          <div className="w-full text-center my-12">
-            <p>Os resultados da pesquisa aparecem aqui.</p>
-          </div>
-        )}
-      </div>  
+    <Suspense fallback={<div>Carregando busca...</div>}>
+      <section className="container SearchPage">
+        {/* BARRA DE PESQUISA / FILTROS */}
+        <div className="SearchPage_Header">
       
-    </section>
+          {/* Input Nome */}
+          <div className="InputContainer header_section">
+            <input
+              type="text"
+              value={filters.restaurantName}
+              onChange={(e) => setFilters({...filters, restaurantName: e.target.value})}
+              style={{ border: 0, paddingLeft: 0 }}
+              placeholder="Nome do restaurante..."
+            />
+          </div>
+      
+          {/* Select Localidade */}
+          <div className="InputContainer header_section">
+            <input
+              type="text"
+              value={filters.city}
+              onChange={(e) => setFilters({...filters, city: e.target.value})}
+              className=""
+              placeholder="Localidade..."
+            />
+          </div>
+          {/* Select Cozinha */}
+          <div className="InputContainer header_section">
+            <select
+              value={filters.cuisineType}
+              onChange={(e) => setFilters({...filters, cuisineType: e.target.value})}
+              className=""
+            >
+              <option value="">Todas as cozinhas</option>
+              {RestaurantCategories.map((category) => (
+                <option key={category.value} value={category.slug}>
+                  {category.icon} {category.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          {/* BOTÃO PESQUISAR */}
+          <button
+            onClick={handleSearch}
+            className="search_button"
+          >
+            Pesquisar
+          </button>
+          {/* Limpar Filtros */}
+          <button
+            onClick={clearFilters}
+            className="clear_filters_button"
+          >
+            Limpar
+          </button>
+        </div>
+        {/* RESULTADOS */}
+        <div>
+          {isLoading ? (
+            <p>Carregando resultados...</p>
+          ) : restaurants.length > 0 ? (
+            <div className="SearchPage_Results">
+              {restaurants.map((restaurant) => (
+                <SearchResultsCard key={restaurant.id} {...restaurant} />
+              ))}
+            </div>
+          ) : (
+            <div className="w-full text-center my-12">
+              <p>Os resultados da pesquisa aparecem aqui.</p>
+            </div>
+          )}
+        </div>
+      
+      </section>
+    </Suspense>
   )
 }
