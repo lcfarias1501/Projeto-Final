@@ -35,7 +35,7 @@ export default function RestaurantDetailsPage() {
 
     if (loading) {
         return (
-            <div className="loading-state">
+            <div className="pre-rendering-container container">
                 <p>Loading restaurant details...</p>
             </div>
         )
@@ -43,7 +43,7 @@ export default function RestaurantDetailsPage() {
 
     if (error) {
         return (
-            <div className="error-state">
+            <div className="pre-rendering-container container">
                 <p>Error: {error}</p>
             </div>
         )
@@ -51,7 +51,7 @@ export default function RestaurantDetailsPage() {
 
     if (!restaurant) {
         return (
-            <div className="empty-state">
+            <div className="pre-rendering-container container">
                 <p>No restaurant data available.</p>
             </div>
         )
