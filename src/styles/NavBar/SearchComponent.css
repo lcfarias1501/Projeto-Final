@@ -11,7 +11,16 @@
     display: flex;
     height: 100%;
     justify-content: space-between;
-    
+    align-items: center;
+    padding: .5rem;
+}
+
+.SearchComponentBig_Container.active {
+    border-left: .5px solid hsl(var(--input));
+    border-right: .5px solid hsl(var(--input));
+    border-top: .5px solid hsl(var(--input));
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
 }
 
 .SearchResultsContainer input {
@@ -22,4 +31,56 @@
 .SearchComponentBig_Button {
     cursor: pointer;
     transform: rotateZ(90deg);
+}
+
+/* DROPDOWN CONTAINER */
+.SearchResultsDropdown {
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    padding: 1rem .5rem;
+    background-color: hsl(var(--background));
+    backdrop-filter: blur(100px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    z-index: 1000;
+    border-left: .5px solid hsl(var(--input));
+    border-right: .5px solid hsl(var(--input));
+    border-bottom: .5px solid hsl(var(--input));
+}
+
+
+.SearchResultsDropdown .inputResultItem {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid hsl(var(--input));
+}
+.SearchResultsDropdown .inputResultItem:last-child {
+    border-bottom: none;
+}
+
+.SearchResultsDropdown .inputResultItem .resultImage {
+    width: 35px;
+    height: 35px;
+    border-radius: 100px;
+    object-fit: cover;
+    margin-right: 0.75rem;
+    
+}
+
+.SearchResultsDropdown .inputResultItem .details {
+    display: flex;
+    flex-direction: column;
+}
+
+.SearchResultsDropdown .inputResultItem .resultName {
+    font-weight: 700;
+    color: hsl(var(--text-primary));
+}
+
+.SearchResultsDropdown .inputResultItem .resultCity {
+    font-size: 0.8rem;
+    color: lightgrey;
 }
