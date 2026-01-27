@@ -1,5 +1,16 @@
 /* RestaurantDetailsView.css - Modern & Unique Design */
 
+/* edit restaurant button */
+.EditRestaurant_Link {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  padding: 0.75rem;
+  border-radius: 4rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
 
 /* FAIL AND LOADING */
 .pre-rendering-container {

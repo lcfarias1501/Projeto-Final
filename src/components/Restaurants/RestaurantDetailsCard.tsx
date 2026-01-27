@@ -1,10 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { LuLayoutGrid, LuLayoutList, LuStar, LuMapPin, LuClock, LuPhone, LuUtensils, LuChevronLeft, LuChevronRight } from 'react-icons/lu'
+import { LuLayoutGrid, LuLayoutList, LuStar, LuMapPin, LuClock, LuPhone, LuUtensils, LuChevronLeft, LuChevronRight, LuPencil } from 'react-icons/lu'
 import { Restaurant, CuisineType } from "@/types/Restaurant"
 import Image from "next/image"
 import '@/styles/Restaurants/RestaurantDetails.css'
+import Link from "next/link"
 
 interface RestaurantDetailsViewProps {
   restaurant: Restaurant
@@ -53,6 +54,10 @@ export default function RestaurantDetailsCard({ restaurant }: RestaurantDetailsV
 
   return (
     <div className="RestaurantDetails">
+
+      <Link href={`/dashboard/edit-restaurant/${restaurant.id}`} className="EditRestaurant_Link">
+        <LuPencil />
+      </Link>
       
       {/* Hero Section with Parallax Effect */}
       <div className="RestaurantDetails_Hero">
