@@ -41,8 +41,9 @@ model MenuItem {
   id          Int      @id @default(autoincrement())
   name        String
   description String
+  imageUrl    String
   price       Float
-  category    String
+  category    MenuItemCategory
   restaurantId Int
 
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
@@ -69,4 +70,11 @@ enum CuisineType {
   THAI
   MEDITERRANEAN
   OTHER
+}
+
+enum MenuItemCategory {
+  APPETIZER
+  MAIN_COURSE
+  DESSERT
+  DRINK
 }

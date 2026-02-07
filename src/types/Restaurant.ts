@@ -17,6 +17,7 @@ export interface MenuItem {
   id: number
   name: string
   description: string
+  imageUrl: string
   price: number
   category: string
   restaurantId: number
@@ -48,4 +49,19 @@ export interface Restaurant {
 
   createdAt?: Date
   updatedAt?: Date
+}
+
+
+export interface MenuItemsCategories {
+  APPETIZER: string
+  MAIN_COURSE: string
+  DESSERT: string
+  BEVERAGE: string
+}
+
+export const menuItemsCategories: MenuItemsCategories = {
+  APPETIZER: "Entrada",
+  MAIN_COURSE: "Prato Principal",
+  DESSERT: "Sobremesa",
+  BEVERAGE: "Bebida",
 }

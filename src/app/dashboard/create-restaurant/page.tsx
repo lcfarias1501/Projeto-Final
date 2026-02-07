@@ -4,15 +4,16 @@ import { useState } from 'react'
 import { CuisineType } from '@/types/Restaurant'
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
-import { LuUpload, LuX } from 'react-icons/lu'
+import { LuUpload, LuX, LuPlus, LuTrash2 } from 'react-icons/lu'
+import { MenuItemCategory } from '@prisma/client'
 
 export default function CreateRestaurant() {
-
   const { theme } = useTheme()
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
-  const [imageFile, setImageFile] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string>('')
+  
+  const [restaurantImage, setRestaurantImage] = useState<File | null>(null)
+  const [restaurantPreview, setRestaurantPreview] = useState('')
 
   const [formData, setFormData] = useState({
     name: '',
@@ -25,380 +26,239 @@ export default function CreateRestaurant() {
     openHour: '',
     closeHour: '',
     openDays: '',
+    menuItems: [
+      { name: '', description: '', price: 0, category: MenuItemCategory.MAIN_COURSE, imageFile: null as File | null, preview: '' }
+    ]
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'rating' ? parseFloat(value) : value
+    setFormData(prev => ({ 
+      ...prev, 
+      [name]: name === 'rating' ? parseFloat(value) : value 
     }))
   }
 
-  // Selecionar imagem (apenas preview local, SEM upload)
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMenuChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    const newItems = [...formData.menuItems]
+    // @ts-ignore
+    newItems[index][name] = name === 'price' ? parseFloat(value) : value
+    setFormData({ ...formData, menuItems: newItems })
+  }
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>, index?: number) => {
     const file = e.target.files?.[0]
     if (!file) return
+    const previewUrl = URL.createObjectURL(file)
 
-    // Validar tipo
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
-    if (!validTypes.includes(file.type)) {
-      setMessage('❌ Tipo de arquivo inválido. Use JPG, PNG ou WEBP')
-      return
+    if (index !== undefined) {
+      const newItems = [...formData.menuItems]
+      newItems[index].imageFile = file
+      newItems[index].preview = previewUrl
+      setFormData({ ...formData, menuItems: newItems })
+    } else {
+      setRestaurantImage(file)
+      setRestaurantPreview(previewUrl)
     }
-
-    // Validar tamanho (max 5MB)
-    const maxSize = 5 * 1024 * 1024
-    if (file.size > maxSize) {
-      setMessage('❌ Arquivo muito grande. Máximo 5MB')
-      return
-    }
-
-    // Guardar arquivo e criar preview local
-    setImageFile(file)
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      setImagePreview(reader.result as string)
-    }
-    reader.readAsDataURL(file)
-    setMessage('') // Limpar mensagens de erro
   }
 
-  // Remover imagem
-  const handleRemoveImage = () => {
-    setImageFile(null)
-    setImagePreview('')
-  }
-
-  // Upload da imagem para Cloudinary
   const uploadImage = async (file: File): Promise<string> => {
-    const formData = new FormData()
-    formData.append('file', file)
-
-    const response = await fetch('/api/uploads/upload-image', {
-      method: 'POST',
-      body: formData,
-    })
-
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.error || 'Erro ao fazer upload da imagem')
-    }
-
-    return data.imageUrl
+    const data = new FormData()
+    data.append('file', file)
+    const res = await fetch('/api/uploads/upload-image', { method: 'POST', body: data })
+    if (!res.ok) throw new Error('Falha no upload')
+    const json = await res.json()
+    return json.imageUrl
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    if (!imageFile) {
-      setMessage('❌ Por favor, adicione uma imagem do restaurante')
-      return
-    }
-
+    if (!restaurantImage) return setMessage('❌ Adicione a imagem do restaurante')
+    
     setLoading(true)
-    setMessage('⏳ Fazendo upload da imagem...')
+    setMessage('⏳ Processando imagens e dados...')
 
     try {
-      // 1. PRIMEIRO: Upload da imagem
-      const imageUrl = await uploadImage(imageFile)
-      
-      setMessage('⏳ Criando restaurante...')
+      const restaurantUrl = await uploadImage(restaurantImage)
 
-      // 2. DEPOIS: Criar restaurante com a URL da imagem
+      const menuItemsWithUrls = await Promise.all(
+        formData.menuItems.map(async (item) => {
+          let itemUrl = ''
+          if (item.imageFile) itemUrl = await uploadImage(item.imageFile)
+          return {
+            name: item.name,
+            description: item.description,
+            price: item.price,
+            category: item.category,
+            imageUrl: itemUrl
+          }
+        })
+      )
+
       const response = await fetch('/api/restaurants/createRestaurant', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...formData,
-          imageUrl
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...formData, imageUrl: restaurantUrl, menuItems: menuItemsWithUrls }),
       })
 
       if (response.ok) {
-        const restaurant = await response.json()
-        setMessage(`✅ Restaurante "${restaurant.name}" criado com sucesso!`)
-        
-        // Limpar formulário
-        setFormData({
-          name: '',
-          description: '',
-          address: '',
-          city: '',
-          phoneNumber: '',
-          cuisineType: CuisineType.OTHER,
-          rating: 0,
-          openHour: '',
-          closeHour: '',
-          openDays: '',
-        })
-        setImageFile(null)
-        setImagePreview('')
+        setMessage('✅ Restaurante e Menu criados com sucesso!')
       } else {
-        setMessage('❌ Erro ao criar restaurante')
+        throw new Error('Erro ao salvar no servidor')
       }
-    } catch (error: any) {
-      setMessage(`❌ ${error.message || 'Erro ao processar'}`)
-      console.error(error)
+    } catch (err: any) {
+      setMessage(`❌ ${err.message}`)
     } finally {
       setLoading(false)
     }
   }
 
+  const inputStyles = `w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none ${
+    theme === 'dark' ? 'border-gray-700 text-white' : 'border-gray-300'
+  }`
+
   return (
-    <div className="min-h-screen py-8 px-4">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">
-          Criar Novo Restaurante
-        </h1>
+    <div className="min-h-screen py-8 px-4 max-w-3xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">Novo Restaurante</h1>
+      
+      {message && (
+        <div className={`p-4 mb-4 rounded border ${
+          message.includes('✅') ? 'bg-green-100 border-green-200 text-green-800' : 'bg-blue-100 border-blue-200 text-blue-800'
+        }`}>
+          {message}
+        </div>
+      )}
 
-        {message && (
-          <div className={`p-4 mb-6 rounded-lg ${
-            message.includes('✅') 
-              ? 'bg-green-100 text-green-800' 
-              : message.includes('⏳')
-              ? 'bg-blue-100 text-blue-800'
-              : 'bg-red-100 text-red-800'
-          }`}>
-            {message}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className={`${theme === 'light' ? 'shadow-gray' : 'shadow-gray-800'} shadow-md rounded-lg p-6 space-y-6`}>
-
-          {/* SELEÇÃO DE IMAGEM */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Imagem do Restaurante *
-            </label>
-            
-            {!imagePreview ? (
-              <div className={`border-2 border-dashed rounded-lg p-8 text-center ${
-                theme === 'light' ? 'border-gray-300' : 'border-gray-600'
-              }`}>
-                <input
-                  type="file"
-                  accept="image/jpeg,image/jpg,image/png,image/webp"
-                  onChange={handleImageSelect}
-                  className="hidden"
-                  id="image-upload"
-                  disabled={loading}
-                />
-                <label
-                  htmlFor="image-upload"
-                  className={`cursor-pointer flex flex-col items-center gap-2 ${
-                    loading ? 'opacity-50 cursor-not-allowed' : ''
-                  }`}
-                >
-                  <LuUpload size={40} className="text-gray-400" />
-                  <p className="text-sm text-gray-600">
-                    Clique para selecionar imagem
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    JPG, PNG ou WEBP (máx. 5MB)
-                  </p>
-                </label>
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* DADOS DO RESTAURANTE */}
+        <section className={`p-6 rounded-xl shadow-sm border ${
+          theme === 'dark' ? 'border-gray-800' : 'border-gray-200'
+        } space-y-4`}>
+          
+          <div className="flex flex-col items-center border-2 border-dashed p-4 rounded-lg border-gray-400">
+            {restaurantPreview ? (
+              <div className="relative w-full h-48">
+                <Image src={restaurantPreview} alt="Preview" fill className="rounded-lg object-cover" />
+                <button onClick={() => {setRestaurantImage(null); setRestaurantPreview('')}} className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full"><LuX /></button>
               </div>
             ) : (
-              <div className={`relative w-full h-64 rounded-lg overflow-hidden border ${
-                theme === 'light' ? 'border-gray-300' : 'border-gray-600'
-              }`}>
-                <Image
-                  src={imagePreview}
-                  alt="Preview"
-                  fill
-                  className="object-cover"
-                />
-                <button
-                  type="button"
-                  onClick={handleRemoveImage}
-                  disabled={loading}
-                  className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition disabled:opacity-50"
-                  aria-label="Remover imagem"
-                >
-                  <LuX size={20} />
-                </button>
-              </div>
+              <label className="cursor-pointer flex flex-col items-center py-6">
+                <LuUpload size={32} className="text-gray-400" />
+                <span className="text-gray-500">Foto Principal do Restaurante</span>
+                <input type="file" className="hidden" onChange={(e) => handleImageSelect(e)} />
+              </label>
             )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Nome do Restaurante *
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              disabled={loading}
-              className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-300' : 'border-gray-600'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50`}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Descrição *
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              required
-              disabled={loading}
-              rows={4}
-              className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-300' : 'border-gray-600'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50`}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Cidade *
-              </label>
-              <input
-                type="text"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                required
-                disabled={loading}
-                className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-300' : 'border-gray-600'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50`}
-              />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-sm font-medium">Nome *</label>
+              <input name="name" placeholder="Ex: Cantina do Chef" onChange={handleChange} className={inputStyles} required />
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Telefone *
-              </label>
-              <input
-                type="tel"
-                name="phoneNumber"
-                value={formData.phoneNumber}
-                onChange={handleChange}
-                required
-                disabled={loading}
-                className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-300' : 'border-gray-600'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50`}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Endereço *
-            </label>
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              required
-              disabled={loading}
-              className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-300' : 'border-gray-600'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50`}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tipo de Cozinha *
-              </label>
-              <select
-                name="cuisineType"
-                value={formData.cuisineType}
-                onChange={handleChange}
-                required
-                disabled={loading}
-                className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-300' : 'border-gray-600'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50`}
-              >
-                {Object.values(CuisineType).map(type => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
+            <div className="space-y-1">
+              <label className="text-sm font-medium">Tipo de Cozinha *</label>
+              <select name="cuisineType" onChange={handleChange} className={inputStyles} required>
+                {Object.values(CuisineType).map(type => <option key={type} value={type}>{type}</option>)}
               </select>
             </div>
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Avaliação (0-5) *
-              </label>
-              <input
-                type="number"
-                name="rating"
-                value={formData.rating}
-                onChange={handleChange}
-                required
-                disabled={loading}
-                min="0"
-                max="5"
-                step="0.1"
-                className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-300' : 'border-gray-600'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50`}
-              />
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Descrição *</label>
+            <textarea name="description" placeholder="Sobre o restaurante..." onChange={handleChange} className={inputStyles} rows={3} required />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-sm font-medium">Cidade *</label>
+              <input name="city" placeholder="Lisboa" onChange={handleChange} className={inputStyles} required />
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-medium">Telefone *</label>
+              <input name="phoneNumber" placeholder="+351 ..." onChange={handleChange} className={inputStyles} required />
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Hora de Abertura *
-              </label>
-              <input
-                type="time"
-                name="openHour"
-                value={formData.openHour}
-                onChange={handleChange}
-                required
-                disabled={loading}
-                className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-300' : 'border-gray-600'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50`}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Hora de Fecho *
-              </label>
-              <input
-                type="time"
-                name="closeHour"
-                value={formData.closeHour}
-                onChange={handleChange}
-                required
-                disabled={loading}
-                className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-300' : 'border-gray-600'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50`}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Dias Abertos *
-              </label>
-              <input
-                type="text"
-                name="openDays"
-                value={formData.openDays}
-                onChange={handleChange}
-                required
-                disabled={loading}
-                placeholder="Ex: Seg-Dom"
-                className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-300' : 'border-gray-600'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50`}
-              />
-            </div>
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Endereço Completo *</label>
+            <input name="address" placeholder="Rua, número..." onChange={handleChange} className={inputStyles} required />
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-md font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
-          >
-            {loading ? 'Processando...' : 'Criar Restaurante'}
-          </button>
-        </form>
-      </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+             <div className="space-y-1">
+                <label className="text-sm font-medium">Avaliação</label>
+                <input type="number" name="rating" step="0.1" min="0" max="5" placeholder="0-5" onChange={handleChange} className={inputStyles} />
+             </div>
+             <div className="space-y-1">
+                <label className="text-sm font-medium">Abertura</label>
+                <input type="time" name="openHour" onChange={handleChange} className={inputStyles} required />
+             </div>
+             <div className="space-y-1">
+                <label className="text-sm font-medium">Fecho</label>
+                <input type="time" name="closeHour" onChange={handleChange} className={inputStyles} required />
+             </div>
+             <div className="space-y-1">
+                <label className="text-sm font-medium">Dias</label>
+                <input name="openDays" placeholder="Seg-Sex" onChange={handleChange} className={inputStyles} required />
+             </div>
+          </div>
+        </section>
+
+        {/* SEÇÃO DO MENU */}
+        <section className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-bold">Menu Items</h2>
+            <button 
+              type="button" 
+              onClick={() => setFormData({...formData, menuItems: [...formData.menuItems, { name: '', description: '', price: 0, category: MenuItemCategory.MAIN_COURSE, imageFile: null, preview: '' }]})} 
+              className="flex items-center gap-2 text-blue-500 font-medium"
+            >
+              <LuPlus /> Adicionar Prato
+            </button>
+          </div>
+
+          {formData.menuItems.map((item, index) => (
+            <div key={index} className={`p-4 border rounded-lg relative ${theme === 'dark' ? 'border-gray-800' : 'border-gray-200'}`}>
+              <button 
+                type="button" 
+                onClick={() => setFormData({...formData, menuItems: formData.menuItems.filter((_, i) => i !== index)})} 
+                className="absolute -top-2 -right-2 text-white bg-red-500 rounded-full p-1 shadow-lg"
+              >
+                <LuTrash2 size={16}/>
+              </button>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex flex-col items-center justify-center border rounded border-gray-400 h-32 relative overflow-hidden ">
+                  {item.preview ? (
+                    <Image src={item.preview} alt="Prato" fill className="object-cover" />
+                  ) : (
+                    <label className="cursor-pointer text-xs flex flex-col items-center p-2 text-center">
+                      <LuUpload size={20}/>
+                      <span>Foto do Prato</span>
+                      <input type="file" className="hidden" onChange={(e) => handleImageSelect(e, index)} />
+                    </label>
+                  )}
+                </div>
+                <div className="col-span-2 space-y-2">
+                  <input placeholder="Nome do prato" name="name" value={item.name} onChange={(e) => handleMenuChange(index, e)} className={inputStyles} required />
+                  <div className="flex gap-2">
+                    <input type="number" placeholder="Preço (€)" name="price" onChange={(e) => handleMenuChange(index, e)} className={inputStyles} required />
+                    <select name="category" onChange={(e) => handleMenuChange(index, e)} className={inputStyles}>
+                      {Object.values(MenuItemCategory).map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <textarea placeholder="Pequena descrição do prato..." name="description" onChange={(e) => handleMenuChange(index, e)} className={inputStyles} rows={1} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </section>
+
+        <button type="submit" disabled={loading} className="w-full bg-blue-600 text-white p-4 rounded-xl font-bold hover:bg-blue-700 transition disabled:bg-gray-500">
+          {loading ? 'A criar restaurante...' : 'Finalizar e Criar Restaurante'}
+        </button>
+      </form>
     </div>
   )
 }

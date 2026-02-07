@@ -2,9 +2,10 @@
 
 import { useState, useEffect, use } from 'react'
 import { CuisineType, Restaurant } from '@/types/Restaurant'
+import { MenuItemCategory } from '@prisma/client' // Importe o Enum do Prisma
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
-import { LuUpload, LuX, LuArrowLeft } from 'react-icons/lu'
+import { LuUpload, LuX, LuArrowLeft, LuPlus, LuTrash2 } from 'react-icons/lu'
 import { useRouter } from 'next/navigation'
 import '@/styles/Dashboard/EditRestaurant.css'
 
@@ -18,8 +19,7 @@ export default function EditRestaurant({ params }: { params: Promise<{ id: strin
   const [message, setMessage] = useState('')
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string>('')
-  const [initialData, setInitialData] = useState<any>(null)
-
+  
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -33,6 +33,9 @@ export default function EditRestaurant({ params }: { params: Promise<{ id: strin
     openDays: '',
   })
 
+  // Estado para o Menu
+  const [menuItems, setMenuItems] = useState<any[]>([])
+
   useEffect(() => {
     async function loadRestaurant() {
       try {
@@ -40,7 +43,7 @@ export default function EditRestaurant({ params }: { params: Promise<{ id: strin
         if (!res.ok) throw new Error('Restaurante não encontrado')
         const data: Restaurant = await res.json()
         
-        const mappedData = {
+        setFormData({
           name: data.name,
           description: data.description,
           address: data.address,
@@ -51,11 +54,11 @@ export default function EditRestaurant({ params }: { params: Promise<{ id: strin
           openHour: data.openHour,
           closeHour: data.closeHour,
           openDays: data.openDays,
-        }
+        })
         
-        setFormData(mappedData)
-        setInitialData(mappedData)
         setImagePreview(data.imageUrl || '')
+        // Carregar pratos existentes com um preview inicial
+        setMenuItems(data.menuItems?.map(item => ({ ...item, preview: item.imageUrl })) || [])
       } catch (err: any) {
         setMessage(`❌ ${err.message}`)
       } finally {
@@ -67,63 +70,79 @@ export default function EditRestaurant({ params }: { params: Promise<{ id: strin
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'rating' ? parseFloat(value) : value
-    }))
+    setFormData(prev => ({ ...prev, [name]: name === 'rating' ? parseFloat(value) : value }))
   }
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setImageFile(file)
-    setImagePreview(URL.createObjectURL(file))
+  // Funções do Menu
+  const handleMenuChange = (index: number, field: string, value: any) => {
+    const updated = [...menuItems]
+    updated[index][field] = field === 'price' ? parseFloat(value) : value
+    setMenuItems(updated)
+  }
+
+  const handleMenuItemImage = (index: number, file: File) => {
+    const updated = [...menuItems]
+    updated[index].newImageFile = file
+    updated[index].preview = URL.createObjectURL(file)
+    setMenuItems(updated)
+  }
+
+  const addMenuItem = () => {
+    setMenuItems([...menuItems, { name: '', description: '', price: 0, category: MenuItemCategory.MAIN_COURSE, preview: '', isNew: true }])
+  }
+
+  const removeMenuItem = (index: number) => {
+    setMenuItems(menuItems.filter((_, i) => i !== index))
+  }
+
+  const uploadImage = async (file: File) => {
+    const uploadFormData = new FormData()
+    uploadFormData.append('file', file)
+    const res = await fetch('/api/uploads/upload-image', { method: 'POST', body: uploadFormData })
+    const data = await res.json()
+    return data.imageUrl
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setUpdating(true)
-    setMessage('⏳ Verificando alterações...')
+    setMessage('⏳ Processando atualizações...')
 
     try {
-      let imageUrl = undefined
+      // 1. Upload imagem principal se mudou
+      let finalImageUrl = imagePreview
+      if (imageFile) finalImageUrl = await uploadImage(imageFile)
 
-      if (imageFile) {
-        setMessage('⏳ Subindo nova imagem...')
-        const uploadFormData = new FormData()
-        uploadFormData.append('file', imageFile)
-        const uploadRes = await fetch('/api/uploads/upload-image', { method: 'POST', body: uploadFormData })
-        const uploadData = await uploadRes.json()
-        imageUrl = uploadData.imageUrl
-      }
-
-      const changedFields: any = {}
-      Object.keys(formData).forEach(key => {
-        if (formData[key as keyof typeof formData] !== initialData[key]) {
-          changedFields[key] = formData[key as keyof typeof formData]
+      // 2. Processar imagens do Menu (apenas as que mudaram)
+      const processedMenuItems = await Promise.all(menuItems.map(async (item) => {
+        let currentUrl = item.imageUrl
+        if (item.newImageFile) {
+          currentUrl = await uploadImage(item.newImageFile)
         }
-      })
+        return {
+          id: item.id, // Se for novo, será undefined
+          name: item.name,
+          description: item.description,
+          price: item.price,
+          category: item.category,
+          imageUrl: currentUrl
+        }
+      }))
 
-      if (imageUrl) changedFields.imageUrl = imageUrl
-
-      if (Object.keys(changedFields).length === 0) {
-        setMessage('ℹ️ Nenhuma alteração detectada.')
-        setUpdating(false)
-        return
-      }
-
+      // 3. Enviar para o Backend
       const response = await fetch(`/api/restaurants/updateRestaurant/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(changedFields),
+        body: JSON.stringify({ 
+          ...formData, 
+          imageUrl: finalImageUrl,
+          menuItems: processedMenuItems 
+        }),
       })
 
-      if (response.ok) {
-        setMessage('✅ Atualizado com sucesso!')
-        setInitialData({ ...formData })
-      } else {
-        throw new Error('Erro ao atualizar')
-      }
+      if (!response.ok) throw new Error('Erro ao salvar')
+      setMessage('✅ Restaurante e Menu atualizados!')
+      router.refresh()
     } catch (error: any) {
       setMessage(`❌ ${error.message}`)
     } finally {
@@ -136,96 +155,89 @@ export default function EditRestaurant({ params }: { params: Promise<{ id: strin
   return (
     <div className="edit-page-container">
       <div className="edit-card">
-        <button onClick={() => router.back()} className="back-button">
-          <LuArrowLeft /> Voltar
-        </button>
-        
+        <button onClick={() => router.back()} className="back-button"><LuArrowLeft /> Voltar</button>
         <h1 className="title">Editar Restaurante</h1>
 
-        {message && (
-          <div className={`alert ${message.includes('✅') ? 'alert-success' : 'alert-info'}`}>
-            {message}
-          </div>
-        )}
+        {message && <div className={`alert ${message.includes('✅') ? 'alert-success' : 'alert-info'}`}>{message}</div>}
 
         <form onSubmit={handleSubmit} className={`edit-form ${theme}`}>
           
-          {/* IMAGE SECTION */}
+          {/* SEÇÃO IMAGEM PRINCIPAL */}
           <div className="form-group">
-            <label>Imagem do Restaurante</label>
+            <label>Imagem Principal</label>
             <div className="image-preview-container">
                <Image src={imagePreview} alt="Preview" fill className="preview-img" />
                <label htmlFor="image-edit" className="upload-overlay">
-                  <LuUpload size={24} color='white' />
-                  <input type="file" id="image-edit" className="hidden-input" onChange={handleImageSelect} />
+                  <LuUpload size={24} />
+                  <input type="file" id="image-edit" className="hidden-input" onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) { setImageFile(file); setImagePreview(URL.createObjectURL(file)) }
+                  }} />
                </label>
             </div>
           </div>
 
-          {/* NAME */}
+          {/* DADOS BÁSICOS (MANTIDOS) */}
           <div className="form-group">
-            <label>Nome do Restaurante *</label>
+            <label>Nome *</label>
             <input type="text" name="name" value={formData.name} onChange={handleChange} required />
           </div>
 
-          {/* DESCRIPTION */}
           <div className="form-group">
             <label>Descrição *</label>
-            <textarea name="description" value={formData.description} onChange={handleChange} required rows={4} />
+            <textarea name="description" value={formData.description} onChange={handleChange} required rows={3} />
           </div>
 
-          {/* CITY & PHONE */}
           <div className="form-row">
             <div className="form-group">
-              <label>Cidade *</label>
-              <input type="text" name="city" value={formData.city} onChange={handleChange} required />
+                <label>Cidade</label>
+                <input name="city" value={formData.city} onChange={handleChange} />
             </div>
             <div className="form-group">
-              <label>Telefone *</label>
-              <input type="tel" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required />
+                <label>Telefone</label>
+                <input name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} />
             </div>
           </div>
 
-          {/* ADDRESS */}
-          <div className="form-group">
-            <label>Endereço *</label>
-            <input type="text" name="address" value={formData.address} onChange={handleChange} required />
-          </div>
+          {/* SEÇÃO MENU ITEMS */}
+          <div className="menu-edit-section">
+            <div className="menu-header">
+                <h2>Cardápio / Menu</h2>
+                <button type="button" onClick={addMenuItem} className="add-menu-btn">
+                    <LuPlus /> Adicionar Prato
+                </button>
+            </div>
 
-          {/* CUISINE & RATING */}
-          <div className="form-row">
-            <div className="form-group">
-              <label>Cozinha *</label>
-              <select name="cuisineType" value={formData.cuisineType} onChange={handleChange} required>
-                {Object.values(CuisineType).map(type => (
-                  <option key={type} value={type}>{type}</option>
+            <div className="menu-items-list">
+                {menuItems.map((item, index) => (
+                    <div key={index} className="menu-item-edit-card">
+                        <div className="menu-item-img-box">
+                            {item.preview ? (
+                                <Image src={item.preview} alt="Prato" fill className="object-cover rounded" />
+                            ) : <LuUpload size={20} />}
+                            <input type="file" className="hidden-file-input" onChange={(e) => e.target.files?.[0] && handleMenuItemImage(index, e.target.files[0])} />
+                        </div>
+                        
+                        <div className="menu-item-inputs">
+                            <input placeholder="Nome do prato" value={item.name} onChange={(e) => handleMenuChange(index, 'name', e.target.value)} />
+                            <div className="row">
+                                <input type="number" placeholder="Preço" value={item.price} onChange={(e) => handleMenuChange(index, 'price', e.target.value)} />
+                                <select value={item.category} onChange={(e) => handleMenuChange(index, 'category', e.target.value)}>
+                                    {Object.values(MenuItemCategory).map(c => <option key={c} value={c}>{c}</option>)}
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="button" onClick={() => removeMenuItem(index)} className="delete-item-btn">
+                            <LuTrash2 />
+                        </button>
+                    </div>
                 ))}
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Avaliação (0-5) *</label>
-              <input type="number" name="rating" value={formData.rating} onChange={handleChange} required min="0" max="5" step="0.1" />
-            </div>
-          </div>
-
-          {/* HOURS & DAYS */}
-          <div className="form-row-three">
-            <div className="form-group">
-              <label>Abertura</label>
-              <input type="time" name="openHour" value={formData.openHour} onChange={handleChange} required />
-            </div>
-            <div className="form-group">
-              <label>Fecho</label>
-              <input type="time" name="closeHour" value={formData.closeHour} onChange={handleChange} required />
-            </div>
-            <div className="form-group">
-              <label>Dias</label>
-              <input type="text" name="openDays" value={formData.openDays} onChange={handleChange} required placeholder="Ex: Seg-Sex" />
             </div>
           </div>
 
           <button type="submit" disabled={updating} className="submit-button">
-            {updating ? 'Salvando...' : 'Salvar Alterações'}
+            {updating ? 'A guardar alterações...' : 'Salvar Tudo'}
           </button>
         </form>
       </div>

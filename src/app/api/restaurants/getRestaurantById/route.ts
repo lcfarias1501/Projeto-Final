@@ -15,6 +15,9 @@ export async function GET(request: NextRequest) {
         const restaurant = await prisma.restaurant.findUnique({
             where: {
                 id: parseInt(restaurantId) 
+            },
+            include: {
+                menuItems: true 
             }
         })
 
@@ -22,7 +25,6 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ message: "Restaurant not found" }, { status: 404 })
         }
 
-        // Importante: Verifique se o seu frontend espera { restaurant } ou apenas o objeto
         return NextResponse.json(restaurant, { status: 200 })
     } catch (error) {
         return NextResponse.json({ message: "Internal Server Error" }, { status: 500 })
