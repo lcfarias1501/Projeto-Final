@@ -17,7 +17,7 @@ const menuItems: MenuItem[] = [
     },
     {
         name: 'Sobre',
-        path: '/about'
+        path: '/sobre'
     },
     {
         name: 'Pesquisa',
