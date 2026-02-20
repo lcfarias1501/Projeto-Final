@@ -5,7 +5,7 @@ import { trendingRestaurants } from '@/constants/mockRestaurants'
 import '@/styles/About/About.css'
 
 export default function About() {
-  // Calcular estatísticas dinamicamente
+
   const restaurantCount = trendingRestaurants.length
 
   return (
