@@ -30,9 +30,9 @@ export default function About() {
               <p className="about-hero-description">
                 Descubra uma nova forma de explorar a gastronomia da sua região. Conectamos você aos melhores restaurantes locais com informações reais e experiências autênticas.
               </p>
-              <button className="about-cta-button">
+              <a href="/" className="about-cta-button">
                 Explorar Restaurantes
-              </button>
+              </a>
             </div>
           </div>
         </div>

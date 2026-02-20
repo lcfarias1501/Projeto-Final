@@ -8,7 +8,7 @@ import { redirect } from 'next/navigation';
 export default function HeroSection() {
 
     const handleExploreClick = () => {
-        redirect('/restaurants');
+        redirect('#trending_restaurats');
     }
 
     return (

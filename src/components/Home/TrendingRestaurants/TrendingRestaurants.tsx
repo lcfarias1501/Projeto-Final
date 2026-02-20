@@ -27,7 +27,7 @@ export default function TrendingRestaurants() {
 
     return (
         <section className="container">
-            <div className="section_header">
+            <div className="section_header" id="trending_restaurats">
                 <div>
                     <h2 className='Section_Title'>Melhores Restaurantes Perto de Si</h2>
                     <p className='Section_Subtitle'>Descubra os favoritos da sua região</p>
