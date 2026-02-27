@@ -84,7 +84,7 @@ function SearchContent() {
           >
             <option value="">Todas as cozinhas</option>
             {RestaurantCategories.map((category) => (
-              <option key={category.value} value={category.value}>
+              <option key={category.value} value={category.slug}>
                 {category.icon} {category.label}
               </option>
             ))}

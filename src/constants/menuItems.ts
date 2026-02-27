@@ -23,10 +23,6 @@ const menuItems: MenuItem[] = [
         name: 'Pesquisa',
         path: '/search'
     },
-    {
-        name: 'Contactos',
-        path: '/contacts' // Corrigi aqui - estava faltando a barra
-    },
 ]
 
 export default menuItems

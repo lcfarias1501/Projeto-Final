@@ -32,7 +32,7 @@ export default function TrendingRestaurants() {
                     <h2 className='Section_Title'>Melhores Restaurantes Perto de Si</h2>
                     <p className='Section_Subtitle'>Descubra os favoritos da sua região</p>
                 </div>
-                {restaurants.length > 0  && (<button className='view_all_button'>Ver Todos</button>)}
+
             </div>
 
             {loading ?

@@ -240,6 +240,7 @@
     box-shadow: 0 2px 12px hsl(var(--foreground) / 0.08);
     transition: all 0.3s ease;
     cursor: pointer;
+    
 }
 
 .dish_card:hover {
@@ -255,6 +256,10 @@
 
 .dish_info {
     padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 50%;
 }
 
 .dish_name {

@@ -87,7 +87,7 @@ export default function TopRatedSection() {
           <h2 className='Section_Title'>Restaurantes Top Rated</h2>
           <p className='Section_Subtitle'>Os melhores avaliados pelos clientes</p>
         </div>
-        <button className='view_all_button'>Ver Todos</button>
+
       </div>
 
       <div className="top_rated_list">
